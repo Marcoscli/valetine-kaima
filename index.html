@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaima's Mystery</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@1,600&family=Montserrat:wght@200;400&display=swap');
+
+        body {
+            margin: 0;
+            background: #0a0000;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Subtle smoke/glow effect */
+        .bg-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #450000 0%, #000000 80%);
+            z-index: -1;
+        }
+
+        #the-invitation {
+            text-align: center;
+            padding: 40px;
+            max-width: 500px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 100px rgba(138, 3, 3, 0.4);
+            border-radius: 5px;
+        }
+
+        h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 3.5rem;
+            margin: 0;
+            letter-spacing: 8px;
+            background: linear-gradient(to bottom, #d4af37, #fefae0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .eyes-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            color: #ffcccc;
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        .btn-box {
+            margin-top: 50px;
+            position: relative;
+            height: 150px;
+        }
+
+        button {
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: 0.5s;
+        }
+
+        #yes-btn {
+            background: #8a0303;
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px rgba(138, 3, 3, 0.8);
+            border-radius: 2px;
+        }
+
+        #yes-btn:hover {
+            background: #d90429;
+            box-shadow: 0 0 40px #ff0000;
+        }
+
+        #no-btn {
+            background: transparent;
+            color: #555;
+            border: 1px solid #333;
+            padding: 10px 30px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Surprise Section */
+        #praise-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 2s;
+        }
+
+        .sexy-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            line-height: 1.6;
+            max-width: 80%;
+            color: #f8f9fa;
+        }
+
+        .highlight-gold {
+            color: #d4af37;
+            text-shadow: 0 0 10px var(--gold);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Background Music Control */
+        #music-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: none;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            padding: 5px 10px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <button id="music-btn" onclick="toggleMusic()">🎵 Toggle Atmosphere</button>
+
+    <div id="the-invitation">
+        <h1>KAIMA</h1>
+        <div class="eyes-quote">I’m lost in your gaze...</div>
+        
+        <div class="btn-box">
+            <button id="yes-btn" onclick="makeItDramatic()">Yes, I'm Yours</button>
+            <button id="no-btn" onmouseover="teaseKaima()">No</button>
+        </div>
+    </div>
+
+    <div id="praise-overlay">
+        <div style="font-size: 4rem; margin-bottom: 20px;">🌹</div>
+        <div class="sexy-text">
+            "Kaima, your beauty is a <span class="highlight-gold">sinful masterpiece</span>. 
+            But it’s those <span class="highlight-gold">magnetic eyes</span> of yours... 
+            one look and I’m completely under your spell. 
+            <br><br>
+            You are intoxicating. 
+            Be mine, tonight and always."
+        </div>
+        <div style="font-family: 'Cinzel Decorative'; color: #d4af37; margin-top: 40px; font-size: 1.5rem;">Happy Valentine's Day, Queen.</div>
+    </div>
+
+    <script>
+        let teaseCount = 0;
+        const messages = ["You sure?", "Look at me...", "Impossible.", "Don't fight it.", "I win."];
+
+        function teaseKaima() {
+            const btn = document.getElementById('no-btn');
+            // Move to random spot
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() * (window.innerHeight - 150);
+            btn.style.position = 'fixed';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+            
+            if(teaseCount < messages.length) {
+                btn.innerText = messages[teaseCount];
+                teaseCount++;
+            } else {
+                btn.style.display = 'none'; // Give up
+            }
+        }
+
+        function makeItDramatic() {
+            document.getElementById('the-invitation').style.display = 'none';
+            document.getElementById('praise-overlay').style.display = 'flex';
+            
+            // Dramatic Gold & Blood-Red Confetti
+            var end = Date.now() + (6 * 1000);
+            var colors = ['#d4af37', '#8a0303', '#000000'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 2,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 2,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            if(music) {
+                return music.paused ? music.play() : music.pause();
+            } else {
+                alert("Add a song link in the code to play music!");
+            }
+        }
+    </script>
+</body>
+</html>
